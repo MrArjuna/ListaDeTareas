@@ -17,50 +17,64 @@ document.addEventListener('DOMContentLoaded', function() {
     function addTask() {
         const taskText = taskInput.value.trim();
         if (taskText !== '') {
-            // Crear elemento de tarea
             const taskItem = document.createElement('li');
             taskItem.className = 'task-item';
             
-            // Checkbox
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
             checkbox.className = 'task-checkbox';
             
-            // Texto de la tarea
             const taskSpan = document.createElement('span');
             taskSpan.className = 'task-text';
             taskSpan.textContent = taskText;
             
-            // Botón de completar
             const completeBtn = document.createElement('button');
             completeBtn.className = 'complete-btn';
             completeBtn.textContent = 'Completada';
             
-            // Evento para marcar como completada
             completeBtn.addEventListener('click', function() {
                 taskItem.classList.add('completed');
-                setTimeout(() => {
-                    taskItem.remove();
-                    saveTasks();
-                }, 500);
+                // Mover a sección de completadas en lugar de eliminar
+                moveToCompleted(taskItem);
+                saveTasks();
             });
             
-            // Construir el elemento
             taskItem.appendChild(checkbox);
             taskItem.appendChild(taskSpan);
             taskItem.appendChild(completeBtn);
             
-            // Añadir a la lista
             taskList.appendChild(taskItem);
-            
-            // Limpiar input
             taskInput.value = '';
-            
-            // Guardar tareas
             saveTasks();
         }
     }
     
+
+    function moveToCompleted(taskItem) {
+        const completedList = document.getElementById('completedList') || createCompletedSection();
+        taskItem.querySelector('.complete-btn').remove();
+        completedList.appendChild(taskItem);
+    }
+    
+    function createCompletedSection() {
+        const section = document.createElement('div');
+        section.className = 'completed-section';
+        
+        const title = document.createElement('h2');
+        title.textContent = 'Tareas Completadas';
+        
+        const list = document.createElement('ul');
+        list.id = 'completedList';
+        
+        section.appendChild(title);
+        section.appendChild(list);
+        document.querySelector('.todo-container').appendChild(section);
+        
+        return list;
+    }
+
+
+
     // Guardar tareas en localStorage
     function saveTasks() {
         const tasks = [];
@@ -71,6 +85,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         localStorage.setItem('tasks', JSON.stringify(tasks));
     }
+
+
+    document.getElementById('clearCompletedBtn').addEventListener('click', () => {
+        document.querySelectorAll('#completedList .task-item').forEach(item => item.remove());
+        saveTasks();
+    });
     
     // Cargar tareas desde localStorage
     function loadTasks() {
