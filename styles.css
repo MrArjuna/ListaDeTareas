@@ -92,3 +92,9 @@ h1 {
     text-decoration: line-through;
     color: #888;
 }
+
+#clearCompletedBtn {
+    margin-top: 10px;
+    background-color: #f44336;
+    color: white;
+}
